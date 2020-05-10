@@ -1,0 +1,521 @@
+#!/bin/bash
+
+clear
+echo -e "\e[1mScript coded by - \e[93mDaLaZ \e[0m"
+sleep 1
+clear
+sleep 1
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m# \e[0m        \e[1mDaLaZ Multi Script   \e[0m                 \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m1. \e[0m Anti-DDoS Install                        \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m2. \e[0m Linux Update/Upgrade                     \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m3. \e[0m My Facebook account                      \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m4. \e[0m My Twitter account                       \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m5. \e[0m Our TeamSpeak Server                     \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m6. \e[0m Exit Script                              \e[36m# \e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[1mScript coded by - \e[93mDaLaZ \e[0m \033[31m         Language:\e[92m ENGLISH"
+
+echo ""
+read -p "Select option: " opt1
+
+#Anti-DDoS
+
+if [ "$opt1" = "1" ]; then
+
+echo -e "\e[1mPackages are now being installed...\e[93m \e[0m"
+sleep 2
+apt-get update && apt-get upgrade -y
+apt install sudo
+clear
+
+  echo -e "\e[1mPackages are now being installed...\e[93m \e[0m"
+  sleep 2
+  clear
+  apt-get install screen -y
+  apt-get install nano -y
+  apt-get install screen -y
+  apt-get install iptables
+  apt-get install ip6tables
+  apt-get install ufw
+  clear
+
+sleep 1
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m# \e[0m          \e[1mAnti-DDoS Installer\e[0m                 \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m             \e[1mVersion v1.0\e[0m                     \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m1. \e[0m Full Anti-DDoS Install                   \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m2. \e[0m Invalid Packets                          \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m3. \e[0m Packets with bogus TCP Flag              \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m4. \e[0m Spoofed Packets                          \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m5. \e[0m ICMP (Usually not needed)                \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m6. \e[0m Limit connection per source IP           \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m7. \e[0m Limit RST Packets                        \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m8. \e[0m Limit new TCP connections                \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m9. \e[0m SYNPROXY on all ports                    \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m10. \e[0m SSH brute-force protection              \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m11. \e[0m Port-scanning protection                \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m12. \e[0m Exit Script                             \e[36m# \e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[1mScript coded by - \e[93mDaLaZ \e[0m \033[31m         Language:\e[92m ENGLISH"
+
+echo ""
+read -p "Enter an number: " opt2
+
+if [ "$opt2" = "1" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+sleep 1
+
+echo -e "\e[1mInstalling full Anti-DDoS. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+/sbin/iptables -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 224.0.0.0/3 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 169.254.0.0/16 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 172.16.0.0/12 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 192.0.2.0/24 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 192.168.0.0/16 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 10.0.0.0/8 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 0.0.0.0/8 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 240.0.0.0/5 -j DROP
+/sbin/iptables -t mangle -A PREROUTING -s 127.0.0.0/8 ! -i lo -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p icmp -j DROP
+/sbin/iptables -t mangle -A PREROUTING -f -j DROP
+/sbin/iptables -A INPUT -p tcp -m connlimit --connlimit-above 111 -j REJECT --reject-with tcp-reset
+/sbin/iptables -A INPUT -p tcp --tcp-flags RST RST -m limit --limit 2/s --limit-burst 2 -j ACCEPT
+/sbin/iptables -A INPUT -p tcp --tcp-flags RST RST -j DROP
+/sbin/iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m limit --limit 60/s --limit-burst 20 -j ACCEPT
+/sbin/iptables -A INPUT -p tcp -m conntrack --ctstate NEW -j DROP
+/sbin/iptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --set
+/sbin/iptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 -j DROP
+/sbin/iptables -N port-scanning
+/sbin/iptables -A port-scanning -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 1/s --limit-burst 2 -j RETURN
+/sbin/iptables -A port-scanning -j DROP
+echo -e "\e[1m\e[92mFull Anti-DDoS was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# INVALID PACKETS
+
+if [ "$opt2" = "2" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+sleep 1
+
+echo -e "\e[1mInstalling Protection for Invalid Packets. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+/sbin/iptables -t mangle -A PREROUTING -m conntrack --ctstate INVALID -j DROP
+clear
+
+echo -e "\e[1m\e[92mProtection for Invalid Packets was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# Packets with bogus TCP Flag
+
+if [ "$opt2" = "3" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+sleep 1
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN,RST,PSH,ACK,URG NONE -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,SYN FIN,SYN -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags FIN,ACK FIN -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,URG URG -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,FIN FIN -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ACK,PSH PSH -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL ALL -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL NONE -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,FIN,PSH,URG -j DROP
+/sbin/iptables -t mangle -A PREROUTING -p tcp --tcp-flags ALL SYN,RST,ACK,FIN,URG -j DROP
+clear
+
+echo -e "\e[1mInstalling Protection from Packets with bogus TCP Flag. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mProtection from Packets with bogus TCP Flag was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# SPOOFED PACKETS
+
+if [ "$opt2" = "4" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+/sbin/iptables -t mangle -A PREROUTING -s 224.0.0.0/3 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 169.254.0.0/16 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 172.16.0.0/12 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 192.0.2.0/24 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 192.168.0.0/16 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 10.0.0.0/8 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 0.0.0.0/8 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 240.0.0.0/5 -j DROP 
+/sbin/iptables -t mangle -A PREROUTING -s 127.0.0.0/8 ! -i lo -j DROP 
+clear
+sleep 1
+
+echo -e "\e[1mInstalling Protection from Spoofed Packets. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mProtection from Spoofed Packets was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# ICMP
+
+if [ "$opt2" = "5" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+sleep 1
+
+echo -e "\e[1mInstalling ICMP Protocol. Please wait...\e[93m \e[0m"
+sleep 1
+clear
+/sbin/iptables -t mangle -A PREROUTING -p icmp -j DROP
+clear
+
+echo -e "\e[1m\e[92mICMP Protocol was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# LIMIT CONNECTIONS PER SOURCE IP
+
+if [ "$opt2" = "6" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+/sbin/iptables -A INPUT -p tcp -m connlimit --connlimit-above 111 -j REJECT --reject-with tcp-reset 
+clear
+sleep 1
+
+echo -e "\e[1mInstalling Protocol for Limiting Connections per source IP. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mProtocol for Limiting Connections per source IP was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# Limit RST packets
+
+if [ "$opt2" = "7" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+/sbin/iptables -A INPUT -p tcp --tcp-flags RST RST -m limit --limit 2/s --limit-burst 2 -j ACCEPT 
+/sbin/iptables -A INPUT -p tcp --tcp-flags RST RST -j DROP
+clear
+sleep 1
+
+echo -e "\e[1mInstalling Protocol for Limiting RST Packets. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mProtocol for Limiting RST Packets was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# Limit new TCP connections per second per source IP
+
+if [ "$opt2" = "8" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+/sbin/iptables -A INPUT -p tcp -m conntrack --ctstate NEW -m limit --limit 60/s --limit-burst 20 -j ACCEPT 
+/sbin/iptables -A INPUT -p tcp -m conntrack --ctstate NEW -j DROP 
+clear
+sleep 1
+
+echo -e "\e[1mInstalling Protocol for Limiting New TCP Connections. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mProtocol for Limiting New TCP Connections was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# SYNPROXY
+
+if [ "$opt2" = "9" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+/sbin/iptables -t raw -A PREROUTING -p tcp -m tcp --syn -j CT --notrack 
+/sbin/iptables -A INPUT -p tcp -m tcp -m conntrack --ctstate INVALID,UNTRACKED -j SYNPROXY --sack-perm --timestamp --wscale 7 --mss 1460 
+/sbin/iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+clear
+sleep 1
+
+echo -e "\e[1mInstalling Protocol for SYNPROXY On all ports. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mProtocol for SYNPROXY On all ports was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# SSH Brute Force Protection
+
+if [ "$opt2" = "10" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+sleep 1
+/sbin/iptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --set 
+/sbin/iptables -A INPUT -p tcp --dport ssh -m conntrack --ctstate NEW -m recent --update --seconds 60 --hitcount 10 -j DROP
+clear
+echo -e "\e[1mInstalling SSH brute-force protection . Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mSSH brute-force protection  was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# Port scan protection
+
+if [ "$opt2" = "11" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+/sbin/iptables -N port-scanning 
+/sbin/iptables -A port-scanning -p tcp --tcp-flags SYN,ACK,FIN,RST RST -m limit --limit 1/s --limit-burst 2 -j RETURN 
+/sbin/iptables -A port-scanning -j DROP
+clear
+sleep 1
+
+echo -e "\e[1mInstalling Port-scanning Protection. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+echo -e "\e[1m\e[92mPort-scanning Protection was installed.\e[0m"
+sleep 1
+clear
+echo "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# EXIT SCRIPT
+
+if [ "$opt2" = "12" ]; then
+  clear
+  echo "\e[1m\e[92mThanks for using the script!\e[0m"
+fi
+
+fi
+
+#  UPDATE / UPGRADE (NO OPT)
+
+if [ "$opt1" = "2" ]; then
+
+#!/bin/bash
+
+RED="\033[1;31m"
+GREEN="\033[1;32m"
+NONE="\033[0m"
+
+
+clear
+echo -e "step 1: ${GREEN}installing sudo${NONE}"
+apt-get install sudo -y
+clear
+
+echo -e "step 1: ${GREEN}pre-configuring packages${NONE}"
+sudo dpkg --configure -a
+
+clear
+
+echo -e "step 2: ${GREEN}fixing system errors${NONE}"
+sudo apt-get install -f
+
+clear
+
+echo -e "step 3: ${GREEN}update apt cache${NONE}"
+sudo apt-get update
+
+clear
+
+echo -e "step 4: ${GREEN}upgrade packages${NONE}"
+sudo apt-get upgrade
+
+clear
+
+echo -e "step 5: ${GREEN}distributing upgrade${NONE}"
+sudo apt-get dist-upgrade
+
+clear
+
+echo -e "step 6: ${GREEN}remove unused packages${NONE}"
+sudo apt-get --purge autoremove
+
+clear
+
+echo -e "step 7: ${GREEN}clean up${NONE}"
+sudo apt-get autoclean
+
+clear
+
+fi
+
+# FB
+
+if [ "$opt1" = "3" ]; then
+  echo -e "\e[1m\e[92mhttps://facebook.com/dalazzz\e[0m"
+  sleep 2
+  echo -e "\e[1m\e[92mThank you for using the script!\e[0m"
+
+fi
+
+# TWITTER
+
+if [ "$opt1" = "4" ]; then
+  echo -e "\e[1m\e[92mhttps://twitter.com/dnllzc\e[0m"
+  sleep 2
+  echo -e "\e[1m\e[92mThank you for using the script!\e[0m"
+
+fi
+
+# TS
+
+if [ "$opt1" = "5" ]; then
+  echo -e "\e[1m\e[92mIP of our TeamSpeak: ekipica\e[0m"
+  sleep 2
+  echo -e "\e[1m\e[92mThank you for using the script!\e[0m"
+
+fi
+
+# EXIT 
+
+if [ "$opt1" = "6" ]; then
+
+clear
+
+echo -e "\e[1m\e[92mThank you for using the script!\e[0m"
+
+fi

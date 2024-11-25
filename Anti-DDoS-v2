@@ -1,0 +1,830 @@
+#!/bin/bash
+
+clear
+echo -e "\e[1mScript coded by - \e[93mdnllzc \e[0m"
+sleep 1
+clear
+sleep 1
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m# \e[0m               \e[1mAnti-DDoS Script\e[0m               \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m                 \e[1mVersion v2.0\e[0m                 \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m1. \e[0m Anti-DDoS Install                        \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m2. \e[0m Linux Update/Upgrade                     \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m3. \e[0m My GitHub                                \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m4. \e[0m Exit Script                              \e[36m# \e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[1mScript coded by - \e[93mdnllzc \e[0m \033[36m      Language:\e[93m ENGLISH"
+
+echo ""
+read -p "Select option: " opt1
+
+#Anti-DDoS
+
+if [ "$opt1" = "1" ]; then
+
+echo -e "\e[1mPackages are now being installed...\e[93m \e[0m"
+sleep 2
+apt-get update && apt-get upgrade -y
+apt install sudo
+clear
+
+  echo -e "\e[1mPackages are now being installed...\e[93m \e[0m"
+  sleep 2
+  clear
+  apt-get install screen -y
+  apt-get install nano -y
+  apt-get install screen -y
+  apt-get install iptables
+  apt-get install ip6tables
+  apt-get install ufw
+  clear
+
+sleep 1
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m# \e[0m             \e[1mAnti-DDoS Installer\e[0m              \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m                \e[1mVersion v2.0\e[0m                  \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m1. \e[0m Full Anti-DDoS Install                   \e[36m# \e[0m"
+echo -e "\e[36m# \e[0m \e[1m2. \e[0m Exit Script                              \e[36m# \e[0m"
+echo -e "\e[36m#                                               \e[36m# \e[0m"
+echo -e "\e[36m#################################################\e[0m"
+echo -e "\e[1mScript coded by - \e[93mdnllzc \e[0m \033[36m      Language:\e[93m ENGLISH"
+
+echo ""
+read -p "Enter an number: " opt2
+
+if [ "$opt2" = "1" ]; then
+
+echo -e "\e[1mChecking for IPTables...\e[93m \e[0m"
+sleep 2
+clear
+
+sudo apt install iptables -y
+clear
+sleep 1
+
+echo -e "\e[1mInstalling full Anti-DDoS. Please wait...\e[93m \e[0m"
+sleep 2
+clear
+
+IPTABLES="/sbin/iptables"
+IP6TABLES="/sbin/ip6tables"
+MODPROBE="/sbin/modprobe"
+RMMOD="/sbin/rmmod"
+ARP="/usr/sbin/arp"
+SSHPORT="22"
+
+# Logging
+LOG="LOG --log-level debug --log-tcp-sequence --log-tcp-options"
+LOG="$LOG --log-ip-options"
+
+# Defaults for rate limiting
+RLIMIT="-m limit --limit 3/s --limit-burst 8"
+
+
+PHIGH="1024:65535"
+PSSH="1000:1023"
+
+# Kernel config
+"$MODPROBE" ip_conntrack_ftp
+"$MODPROBE" ip_conntrack_irc
+echo 1 > /proc/sys/net/ipv4/ip_forward
+echo 0 > /proc/sys/net/ipv4/ip_forward
+
+# IP spoof protection
+for i in /proc/sys/net/ipv4/conf/*/rp_filter; do echo 1 > "$i"; done
+
+# SYN flood
+echo 1 > /proc/sys/net/ipv4/tcp_syncookies
+
+# ICMP settings
+echo 0 > /proc/sys/net/ipv4/icmp_echo_ignore_all
+echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
+
+# Weird IP Addresses logging
+for i in /proc/sys/net/ipv4/conf/*/log_martians; do echo 1 > "$i"; done
+
+# Ignore bogus error responses
+echo 1 > /proc/sys/net/ipv4/icmp_ignore_bogus_error_responses
+
+# No ICMP redirects
+for i in /proc/sys/net/ipv4/conf/*/accept_redirects; do echo 0 > "$i"; done
+for i in /proc/sys/net/ipv4/conf/*/send_redirects; do echo 0 > "$i"; done
+
+# Disable source routing
+for i in /proc/sys/net/ipv4/conf/*/accept_source_route; do echo 0 > "$i"; done
+
+# Disable multicast routing
+for i in /proc/sys/net/ipv4/conf/*/mc_forwarding; do echo 0 > "$i"; done
+
+# Disable proxy_arp
+for i in /proc/sys/net/ipv4/conf/*/proxy_arp; do echo 0 > "$i"; done
+
+# MITM attacks
+for i in /proc/sys/net/ipv4/conf/*/secure_redirects; do echo 1 > "$i"; done
+
+# Disable bootp_relay
+for i in /proc/sys/net/ipv4/conf/*/bootp_relay; do echo 0 > "$i"; done
+
+
+#=================================================================#
+# Defaults
+"$IPTABLES" -P INPUT DROP
+"$IPTABLES" -P FORWARD DROP
+"$IPTABLES" -P OUTPUT DROP
+
+# nat/mangle tables chains
+"$IPTABLES" -t nat -P PREROUTING ACCEPT
+"$IPTABLES" -t nat -P OUTPUT ACCEPT
+"$IPTABLES" -t nat -P POSTROUTING ACCEPT
+"$IPTABLES" -t mangle -P REROUTING ACCEPT
+"$IPTABLES" -t mangle -P INPUT ACCEPT
+"$IPTABLES" -t mangle -P FORWARD ACCEPT
+"$IPTABLES" -t mangle -P OUTPUT ACCEPT
+"$IPTABLES" -t mangle -P POSTROUTING ACCEPT
+
+# Delete all (start clean)
+"$IPTABLES" -F
+"$IPTABLES" -t nat -F
+"$IPTABLES" -t mangle -F
+"$IPTABLES" -X
+"$IPTABLES" -t nat -X
+"$IPTABLES" -t mangle -X
+"$IPTABLES" -Z
+"$IPTABLES" -t nat -Z
+"$IPTABLES" -t mangle -Z
+
+# IPv6 traffic
+if test -x "$IP6TABLES"; then
+# Delete all rules and chains
+"$IP6TABLES" -F 2>/dev/null
+"$IP6TABLES" -t mangle -F 2>/dev/null
+"$IP6TABLES" -X 2>/dev/null
+"$IP6TABLES" -t mangle -X 2>/dev/null
+"$IP6TABLES" -Z 2>/dev/null
+"$IP6TABLES" -t mangle -Z 2>/dev/null
+
+"$IP6TABLES" -P INPUT DROP 2>/dev/null
+"$IP6TABLES" -P FORWARD DROP 2>/dev/null
+"$IP6TABLES" -P OUTPUT DROP 2>/dev/null
+
+# mangle table
+"$IP6TABLES" -t mangle -P PREROUTING ACCEPT 2>/dev/null
+"$IP6TABLES" -t mangle -P INPUT ACCEPT 2>/dev/null
+"$IP6TABLES" -t mangle -P FORWARD ACCEPT 2>/dev/null
+"$IP6TABLES" -t mangle -P OUTPUT ACCEPT 2>/dev/null
+"$IP6TABLES" -t mangle -P POSTROUTING ACCEPT 2>/dev/null
+
+# Accept some traffic
+"$IP6TABLES" -A INPUT -p tcp --dport "$SSHPORT" -s HOST_IPV6_IP -j ACCEPT
+"$IP6TABLES" -A INPUT -p tcp --dport 80 -j ACCEPT
+"$IP6TABLES" -A INPUT -p tcp --dport 21 -j ACCEPT
+"$IP6TABLES" -A INPUT -p tcp --dport 25 -j ACCEPT
+fi
+
+# LOG packets
+"$IPTABLES" -N ACCEPTLOG
+"$IPTABLES" -A ACCEPTLOG -j "$LOG" "$RLIMIT" --log-prefix "ACCEPT "
+"$IPTABLES" -A ACCEPTLOG -j ACCEPT
+"$IPTABLES" -N DROPLOG
+"$IPTABLES" -A DROPLOG -j "$LOG" "$RLIMIT" --log-prefix "DROP "
+"$IPTABLES" -A DROPLOG -j DROP
+"$IPTABLES" -N REJECTLOG
+"$IPTABLES" -A REJECTLOG -j "$LOG" "$RLIMIT" --log-prefix "REJECT "
+"$IPTABLES" -A REJECTLOG -p tcp -j REJECT --reject-with tcp-reset
+"$IPTABLES" -A REJECTLOG -j REJECT
+
+# RELATED ICMP types
+"$IPTABLES" -N RELATED_ICMP
+"$IPTABLES" -A RELATED_ICMP -p icmp --icmp-type destination-unreachable -j ACCEPT
+"$IPTABLES" -A RELATED_ICMP -p icmp --icmp-type time-exceeded -j ACCEPT
+"$IPTABLES" -A RELATED_ICMP -p icmp --icmp-type parameter-problem -j ACCEPT
+"$IPTABLES" -A RELATED_ICMP -j DROPLOG
+
+# Fragmented ICMP packets
+"$IPTABLES" -A INPUT -p icmp --fragment -j DROPLOG
+"$IPTABLES" -A OUTPUT -p icmp --fragment -j DROPLOG
+"$IPTABLES" -A FORWARD -p icmp --fragment -j DROPLOG
+
+# ESTABLISHED ICMP traffic
+"$IPTABLES" -A INPUT -p icmp -m state --state ESTABLISHED -j ACCEPT "$RLIMIT"
+"$IPTABLES" -A OUTPUT -p icmp -m state --state ESTABLISHED -j ACCEPT "$RLIMIT"
+
+# RELATED ICMP traffic, block the rest
+"$IPTABLES" -A INPUT -p icmp -m state --state RELATED -j RELATED_ICMP "$RLIMIT"
+"$IPTABLES" -A OUTPUT -p icmp -m state --state RELATED -j RELATED_ICMP "$RLIMIT"
+
+# Allow loopback
+"$IPTABLES" -A INPUT -i lo -j ACCEPT
+"$IPTABLES" -A OUTPUT -o lo -j ACCEPT
+
+#=====================================================#
+# Incoming traffic
+
+# Allow only rate-limited incoming ICMP echo requests (ping)
+"$IPTABLES" -A INPUT -p icmp --icmp-type echo-request -j ACCEPT "$RLIMIT"
+
+
+# Drop other ICMP traffic
+"$IPTABLES" -A INPUT -p icmp -j DROPLOG
+
+# Multi-PING
+"$IPTABLES"  -A INPUT -p icmp -m limit --limit 1/s --limit-burst 2 -j ACCEPT
+"$IPTABLES"  -A INPUT -p icmp -m limit --limit 1/s --limit-burst 2 -j LOG --log-prefix PING-DROP:
+"$IPTABLES"  -A INPUT -p icmp -j DROP
+
+# Allow incoming established connections
+"$IPTABLES" -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# Drop invalid incoming
+"$IPTABLES" -A INPUT -m state --state INVALID -j DROP
+
+# PORT Scanners
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --tcp-flags ALL ALL -j DROP
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --tcp-flags ALL NONE -j DROP
+
+# SYN Flood
+"$IPTABLES" -N SYN_FLOOD
+"$IPTABLES" -A INPUT -p tcp --syn -j SYN_FLOOD
+"$IPTABLES" -A SYN_FLOOD -m limit --limit 2/s --limit-burst 6 -j RETURN
+"$IPTABLES" -A SYN_FLOOD -j DROP
+
+
+# incoming DNS requests
+"$IPTABLES" -A INPUT -m state --state NEW -p udp --dport 53 -j ACCEPT
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 53 -j ACCEPT
+
+# incoming HTTP requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 80 -j ACCEPT
+
+# incoming HTTPS requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 443 -j ACCEPT
+
+# incoming POP3 requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 110 -j ACCEPT
+
+# incoming IMAP4 requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 143 -j ACCEPT
+
+# incoming POP3S requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 995 -j ACCEPT
+
+# incoming SMTP requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 25 -j ACCEPT
+
+# incoming SSH requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport "$SSHPORT" -j ACCEPT
+
+# incoming FTP requests
+"$IPTABLES" -A INPUT -m state --state NEW -p tcp --dport 21 -j ACCEPT
+
+#=====================================================#
+# Outgoing traffic
+
+# DNS requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p udp --dport 53 -j ACCEPT
+"$IPTABLES" -A OUTPUT -m state --state NEW -p tcp --dport 53 -j ACCEPT
+
+# HTTP requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p tcp --dport 80 -j ACCEPT
+
+# HTTPS requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p tcp --dport 443 -j ACCEPT
+
+# RFC 2476 requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p tcp --dport 587 -j ACCEPT
+
+# POP3S requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p tcp --dport 995 -j ACCEPT
+
+# SSH requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p tcp --dport "$SSHPORT" -j ACCEPT
+
+# FTP requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p tcp --dport 21 -j ACCEPT
+
+# DHCP requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p udp --sport 67:68 --dport 67:68 -j ACCEPT
+
+# OpenVPN requests
+"$IPTABLES" -A OUTPUT -m state --state NEW -p udp --dport 1194 -j ACCEPT
+
+# Allow only rate-limited outgoing ICMP echo requests (ping)
+"$IPTABLES" -A OUTPUT -p icmp --icmp-type echo-request -j ACCEPT "$RLIMIT"
+"$IPTABLES" -A OUTPUT -p icmp -j DROPLOG
+"$IPTABLES" -A FORWARD -p icmp -j DROPLOG
+"$IPTABLES"  -A OUTPUT -p icmp -j ACCEPT
+
+# Allow outgoing EXCEPT invalid
+"$IPTABLES" -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+# Drop invalid outgoing
+"$IPTABLES" -A OUTPUT -m state --state INVALID -j DROP
+# If we would use NAT, INVALID packets would pass, drop them
+"$IPTABLES" -A FORWARD -m state --state INVALID -j DROP
+
+# REJECT and LOG everything else
+"$IPTABLES" -A INPUT -j REJECTLOG
+"$IPTABLES" -A OUTPUT -j REJECTLOG
+"$IPTABLES" -A FORWARD -j REJECTLOG
+
+#=====================================================#
+# Dropping from certain sources
+
+# IANA-reserved IPs
+
+"$IPTABLES" -A INPUT -s 0.0.0.0/7 -j DROP
+"$IPTABLES" -A INPUT -s 2.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 5.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 7.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 10.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 23.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 27.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 31.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 36.0.0.0/7 -j DROP
+"$IPTABLES" -A INPUT -s 39.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 42.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 49.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 50.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 77.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 78.0.0.0/7 -j DROP
+"$IPTABLES" -A INPUT -s 92.0.0.0/6 -j DROP
+"$IPTABLES" -A INPUT -s 96.0.0.0/4 -j DROP
+"$IPTABLES" -A INPUT -s 112.0.0.0/5 -j DROP
+"$IPTABLES" -A INPUT -s 120.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 169.254.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 172.16.0.0/12 -j DROP
+"$IPTABLES" -A INPUT -s 173.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 174.0.0.0/7 -j DROP
+"$IPTABLES" -A INPUT -s 176.0.0.0/5 -j DROP
+"$IPTABLES" -A INPUT -s 184.0.0.0/6 -j DROP
+"$IPTABLES" -A INPUT -s 192.0.2.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 197.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 198.18.0.0/15 -j DROP
+"$IPTABLES" -A INPUT -s 223.0.0.0/8 -j DROP
+"$IPTABLES" -A INPUT -s 224.0.0.0/3 -j DROP
+
+# Digitalocean
+"$IPTABLES" -A INPUT -s 5.101.96.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 24.144.64.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 24.144.72.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 24.144.76.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 24.144.80.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 24.144.96.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 24.199.64.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 37.139.0.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 45.55.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 46.101.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 64.23.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 64.225.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 64.226.64.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 64.227.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 64.227.128.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 67.205.128.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 67.207.64.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 68.183.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 69.55.48.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 69.55.52.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 69.55.54.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 69.55.56.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 69.55.58.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 69.55.60.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 80.240.128.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 82.196.0.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 95.85.0.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 103.253.144.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 104.131.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 104.236.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 104.248.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 107.170.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 128.199.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 134.122.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 134.199.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 134.209.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 137.184.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 138.68.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 138.197.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 139.59.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 141.0.169.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 141.0.170.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 142.93.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 143.110.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 143.198.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 143.244.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 144.126.192.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 146.185.128.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 146.190.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 147.182.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 152.42.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 157.230.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 157.245.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 159.65.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 159.89.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 159.203.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 159.223.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 161.35.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 162.243.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 163.47.8.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 164.90.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 164.92.64.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 164.92.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 165.22.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 165.227.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 165.232.32.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 165.232.64.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 165.232.128.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 167.71.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 167.99.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 167.172.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 168.144.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 170.64.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 174.138.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 178.62.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 178.128.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 185.14.184.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 188.166.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 188.226.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 192.34.56.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 192.81.208.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 192.241.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 198.199.64.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 198.211.96.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 198.232.147.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 204.48.16.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 206.81.0.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 206.189.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 207.154.192.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 208.68.36.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 209.38.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 209.97.128.0/18 -j DROP
+
+# OVH SaS
+"$IPTABLES" -A INPUT -s 5.39.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 5.135.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 5.144.179.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 5.144.181.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 5.144.182.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 5.196.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 8.7.244.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 8.18.128.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 8.18.172.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 8.20.110.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 8.21.41.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 8.24.8.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 8.26.94.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 8.29.224.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 8.30.208.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 8.33.96.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 8.33.128.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 8.33.136.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 15.204.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 15.235.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 23.92.224.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 23.137.200.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 23.151.184.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 23.156.24.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 23.171.168.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 31.6.62.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 31.24.253.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 31.56.52.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 37.59.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 37.60.48.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 37.139.130.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 37.187.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 37.202.192.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 37.230.60.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.224.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.226.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.228.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.230.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.232.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.234.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.236.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 40.160.238.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 43.226.0.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 45.9.120.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.12.185.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.66.83.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.81.112.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.82.82.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.88.10.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.92.60.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 45.94.49.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.112.195.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.140.208.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.149.243.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 45.151.45.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 46.28.236.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 46.105.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 46.244.32.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 51.38.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.68.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.75.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.77.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.79.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.81.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.83.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.89.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.91.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.161.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.178.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.195.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.210.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.222.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 51.254.0.0/15 -j DROP
+"$IPTABLES" -A INPUT -s 54.36.0.0/14 -j DROP
+"$IPTABLES" -A INPUT -s 57.128.0.0/14 -j DROP
+"$IPTABLES" -A INPUT -s 62.122.126.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 63.251.117.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 64.94.92.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 64.95.150.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 64.225.244.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 66.70.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 66.179.22.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 66.179.218.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 69.72.31.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 72.251.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 77.81.138.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 77.90.52.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 79.110.61.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 79.137.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 80.71.226.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 80.87.206.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 81.199.29.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 82.117.230.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 82.152.98.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 82.153.205.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 83.136.214.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 83.143.16.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 83.219.98.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 84.32.9.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 85.217.144.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 86.38.156.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 86.110.56.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 87.98.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 88.209.211.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 88.218.34.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 89.117.87.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 89.213.50.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 89.249.201.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 89.251.22.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 91.90.88.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 91.121.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 91.134.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 91.198.19.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 91.199.32.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 91.199.163.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 91.224.117.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 91.246.38.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 92.222.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 92.246.224.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 93.114.69.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 94.23.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 95.128.156.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 95.131.32.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 103.5.12.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 103.141.69.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 104.167.16.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 104.225.253.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 104.234.50.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 107.189.64.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 108.165.220.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 109.110.184.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 109.176.244.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 114.129.44.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 116.206.98.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 117.18.104.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 123.100.227.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 135.125.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 135.148.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 137.74.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 137.83.50.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 139.99.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 140.233.184.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 141.11.40.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 141.94.0.0/15 -j DROP
+"$IPTABLES" -A INPUT -s 141.227.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 142.4.192.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 142.44.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 144.2.32.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 144.172.73.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 144.217.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 145.239.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 146.19.9.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 146.59.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 146.103.49.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 147.78.102.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 147.79.31.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 147.135.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 148.113.0.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 148.113.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 148.135.153.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 148.135.255.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 148.222.40.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 149.56.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 149.202.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 151.80.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 152.89.250.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 152.228.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 157.254.155.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 158.69.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 159.173.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 159.253.1.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 159.253.6.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 162.19.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.34.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.118.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.158.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.162.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.173.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.211.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.221.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.230.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 163.5.245.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 164.132.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 164.153.186.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 167.114.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 167.234.38.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 167.253.62.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 168.245.185.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 172.83.201.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 176.31.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 176.57.52.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 178.32.0.0/15 -j DROP
+"$IPTABLES" -A INPUT -s 178.215.227.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 180.131.145.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 181.215.3.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 184.174.96.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 185.12.32.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 185.15.68.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 185.23.237.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.25.93.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.33.26.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.45.160.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 185.68.137.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.101.104.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.113.249.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.127.28.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.135.188.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.167.232.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.167.234.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.223.80.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.225.74.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 185.226.181.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.228.207.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.241.51.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.250.27.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 185.255.28.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 188.68.164.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 188.165.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 191.96.153.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 192.31.246.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 192.70.246.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 192.95.0.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 192.99.0.0/16 -j DROP
+"$IPTABLES" -A INPUT -s 192.124.170.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 192.152.126.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 192.228.116.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 192.240.152.0/21 -j DROP
+"$IPTABLES" -A INPUT -s 193.17.91.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 193.33.176.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 193.43.104.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 193.43.138.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 193.57.33.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 193.70.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 193.149.28.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 193.243.147.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 194.59.183.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 194.76.36.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 194.76.173.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 194.99.156.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 194.147.159.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 194.164.230.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 194.169.48.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 195.62.72.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 195.66.30.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 195.206.242.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 198.27.64.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 198.49.103.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 198.50.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 198.100.144.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 198.101.27.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 198.244.128.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 198.245.48.0/20 -j DROP
+"$IPTABLES" -A INPUT -s 199.193.138.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 199.195.140.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 202.2.60.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 203.5.184.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 203.27.201.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 206.168.174.0/23 -j DROP
+"$IPTABLES" -A INPUT -s 206.206.126.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 207.166.206.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 209.71.36.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 209.112.80.0/22 -j DROP
+"$IPTABLES" -A INPUT -s 209.126.71.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 209.151.124.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 212.81.45.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 212.115.41.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 212.192.253.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 213.32.0.0/17 -j DROP
+"$IPTABLES" -A INPUT -s 213.186.32.0/19 -j DROP
+"$IPTABLES" -A INPUT -s 213.218.234.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 213.251.128.0/18 -j DROP
+"$IPTABLES" -A INPUT -s 216.183.120.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 216.203.15.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 217.11.174.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 217.145.68.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 217.177.75.0/24 -j DROP
+"$IPTABLES" -A INPUT -s 217.182.0.0/16 -j DROP
+
+echo -e "\e[1m\e[92mFull Anti-DDoS was installed.\e[0m"
+sleep 1
+clear
+echo -e "\e[1m\e[92mThanks for using the script!\e[0m"
+sleep 1
+clear
+
+fi
+
+# EXIT SCRIPT
+
+if [ "$opt2" = "2" ]; then
+  clear
+  echo -e "\e[1m\e[92mThanks for using the script!\e[0m"
+fi
+
+fi
+
+#  UPDATE / UPGRADE (NO OPT)
+
+if [ "$opt1" = "2" ]; then
+
+RED="\033[1;31m"
+GREEN="\033[1;32m"
+NONE="\033[0m"
+
+
+clear
+echo -e "step 1: ${GREEN}installing sudo${NONE}"
+apt-get install sudo -y
+clear
+
+echo -e "step 1: ${GREEN}pre-configuring packages${NONE}"
+sudo dpkg --configure -a
+
+clear
+
+echo -e "step 2: ${GREEN}fixing system errors${NONE}"
+sudo apt-get install -f
+
+clear
+
+echo -e "step 3: ${GREEN}update apt cache${NONE}"
+sudo apt-get update
+
+clear
+
+echo -e "step 4: ${GREEN}upgrade packages${NONE}"
+sudo apt-get upgrade
+
+clear
+
+echo -e "step 5: ${GREEN}distributing upgrade${NONE}"
+sudo apt-get dist-upgrade
+
+clear
+
+echo -e "step 6: ${GREEN}remove unused packages${NONE}"
+sudo apt-get --purge autoremove
+
+clear
+
+echo -e "step 7: ${GREEN}clean up${NONE}"
+sudo apt-get autoclean
+
+clear
+
+fi
+
+# GITHUB
+
+if [ "$opt1" = "3" ]; then
+  echo -e "\e[1m\e[92mhttps://github.com/dnllzc\e[0m"
+  sleep 2
+  echo -e "\e[1m\e[92mThank you for using the script!\e[0m"
+
+fi
+
+# EXIT 
+
+if [ "$opt1" = "4" ]; then
+
+clear
+
+echo -e "\e[1m\e[92mThank you for using the script!\e[0m"
+
+fi

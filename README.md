@@ -3,7 +3,7 @@ This is my little script to help you with your machine. It includes Anti-DDoS au
 
 
 To start script do the following:
-1. git clone https://github.com/dalazkralj/MultiScriptByDaLaZ.git
+1. git clone https://github.com/dnllzc/Anti-DDoS-v2.git
    
 3. sudo ./MultiScriptByDaLaZ
    
